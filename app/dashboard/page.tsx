@@ -6,6 +6,7 @@ import { IoHomeSharp } from "react-icons/io5";
 import { GrAchievement } from "react-icons/gr";
 import { SiChatbot } from "react-icons/si";
 import DataTable from '../components/table.jsx';
+import CreateNewModal from '../components/modal.jsx';
 import { newsRows, finHealthData } from './newsData.js';
 
 
@@ -13,13 +14,20 @@ import { newsRows, finHealthData } from './newsData.js';
 const userDashboard = () => {
 
     let [isSideBarExpanded, setIsSideBarExpanded] = useState(true);
+    let [createNewModalOpen , setcreateNewModalOpen] = useState(false);
+
+    const handleCreateNewGoal = () => {
+      setcreateNewModalOpen(true);
+    };
 
     const handleExpandSidebar = () => {
         setIsSideBarExpanded((prevState) => !prevState);
     }
 
   return (
+    <>
     <body className="flex min-h-screen bg-gray-100" style={{ display: "flex" }}>
+    { createNewModalOpen && <CreateNewModal onClose={setcreateNewModalOpen} /> }      
       <aside
         className="hidden sm:flex sm:flex-col bg-gray-100 h-screen duration-300 sticky top-0"
         style={{ width: `${isSideBarExpanded ? "20.5vw" : "5.5vw"}` }}
@@ -309,7 +317,9 @@ const userDashboard = () => {
                 </svg>
                 Manage current goals
               </button>
-              <button className="inline-flex px-5 py-3 text-white bg-purple-600 hover:bg-purple-700 focus:bg-purple-700 rounded-md ml-6 mb-3">
+              <button
+              onClick={handleCreateNewGoal}
+              className="inline-flex px-5 py-3 text-white bg-purple-600 hover:bg-purple-700 focus:bg-purple-700 rounded-md ml-6 mb-3">
                 <svg
                   aria-hidden="true"
                   fill="none"
@@ -414,6 +424,7 @@ const userDashboard = () => {
         </main>
       </div>
     </body>
+    </>
   );
 }
 
