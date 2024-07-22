@@ -1,6 +1,5 @@
 'use client'
 import React, { useState } from 'react'
-import Image from 'next/image'
 import { BsArrowRightShort } from 'react-icons/bs'
 import { IoHomeSharp } from "react-icons/io5";
 import { GrAchievement } from "react-icons/gr";
@@ -8,13 +7,14 @@ import { SiChatbot } from "react-icons/si";
 import DataTable from '../components/table.jsx';
 import CreateNewModal from '../components/modal.jsx';
 import { newsRows, finHealthData } from './newsData.js';
+import Chat from '../components/Chat'; 
 
 
 
 const userDashboard = () => {
-
     let [isSideBarExpanded, setIsSideBarExpanded] = useState(true);
     let [createNewModalOpen , setcreateNewModalOpen] = useState(false);
+    let [isChatBotOpen, setIsChatBotOpen] = useState(false);
 
     const handleCreateNewGoal = () => {
       setcreateNewModalOpen(true);
@@ -46,6 +46,7 @@ const userDashboard = () => {
               className={`inline-flex items-center gap-x-4 py-3 hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 rounded-lg justify-${
                 isSideBarExpanded ? "left" : "center"
               }`}
+              onClick={ () => setIsChatBotOpen((prevState) => !prevState) }
             >
               <SiChatbot
                 className={`h-6 w-6 block float-left ${
@@ -291,7 +292,7 @@ const userDashboard = () => {
             </div>
           </div>
         </header>
-        <main className="p-6 sm:p-10 space-y-6">
+        {!isChatBotOpen ? <main className="p-6 sm:p-10 space-y-6">
           <div className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
             <div className="mr-6">
               <h1 className="text-4xl font-semibold mb-2">Hey, [User]</h1>
@@ -421,7 +422,9 @@ const userDashboard = () => {
               </div>
             </div>
           </section>
-        </main>
+        </main> : 
+        <Chat /> 
+        }
       </div>
     </body>
     </>
