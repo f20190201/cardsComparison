@@ -27,10 +27,10 @@ const userDashboard = () => {
   return (
     <>
     <body className="flex min-h-screen bg-gray-100" style={{ display: "flex" }}>
-    { createNewModalOpen && <CreateNewModal onClose={setcreateNewModalOpen} /> }      
+    <CreateNewModal open={createNewModalOpen} onClose={setcreateNewModalOpen} />     
       <aside
         className="hidden sm:flex sm:flex-col bg-gray-100 h-screen duration-300 sticky top-0"
-        style={{ width: `${isSideBarExpanded ? "20.5vw" : "5.5vw"}` }}
+        style={{ width: `${isSideBarExpanded ? "20.5vw" : "5.5vw"}`, zIndex: "15" }}
       >
         <a
           href="#"
@@ -292,7 +292,7 @@ const userDashboard = () => {
             </div>
           </div>
         </header>
-        {!isChatBotOpen ? <main className="p-6 sm:p-10 space-y-6">
+        {!isChatBotOpen && <main className="p-6 sm:p-10 space-y-6">
           <div className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
             <div className="mr-6">
               <h1 className="text-4xl font-semibold mb-2">Hey, [User]</h1>
@@ -390,7 +390,6 @@ const userDashboard = () => {
               </div>
               <div>
                 <span className="inline-block text-2xl font-bold">₹2.75L</span>
-                {/* <span className="inline-block text-xl text-gray-500 font-semibold">₹2.75L</span> */}
                 <span className="block text-gray-500">Total Liabilities</span>
               </div>
             </div>
@@ -422,9 +421,9 @@ const userDashboard = () => {
               </div>
             </div>
           </section>
-        </main> : 
-        <Chat /> 
-        }
+        </main> }
+        <Chat open={isChatBotOpen} /> 
+        
       </div>
     </body>
     </>
