@@ -24,18 +24,7 @@ export let finHealthData = [
         isButton: true,
         type: 'success'
     },
-    {
-        left: "Critical Illness Rider",
-        right: "NOT ENOUGH",
-        isButton: true,
-        type: 'error'
-    },
-    {
-        left: "Accidental Death Rider",
-        right: "NOT ENOUGH",
-        isButton: true,
-        type: 'error'
-    },
+   
     {
         left: "Health Insurance",
         right: "INSURED",
