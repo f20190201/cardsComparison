@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
-
+import axios from "axios";
 const loginPage = () => {
     
     const router = useRouter();
@@ -12,12 +12,11 @@ const loginPage = () => {
     let passwordRef: any = useRef(null);
     let [isShaking, setIsShaking] = useState(false);
 
-    const compareCredentials = (email: string, password: string) => {
-        return email === 'test' && password === 'test';
-    }
+   
 
     const handleOnSubmitClick = async (e: any) => {
         e.preventDefault();
+
         if(!compareCredentials(emailRef.current.value, passwordRef.current.value)) {
             setIsShaking(true);
             setTimeout(() => setIsShaking(false),1000);
@@ -25,6 +24,21 @@ const loginPage = () => {
             console.log("login")
             router.push('/dashboard'); 
         }
+    }
+    async function compareCredentials(email: string, password: string) {
+        try {
+          const response = await axios.post('http://127.0.0.1:8080/api/login', {
+            email,password
+          });
+          console.log(response.data.response);
+          
+         
+          
+        }
+         catch (error) {
+          throw new Error( 'Network response was not ok');
+        }
+    
     }
 
   return (

@@ -25,21 +25,29 @@ export default function NewGoalForm(props) {
     let [expensesSavingsAndInvestments, setExpensesSavingsAndInvestments] = useState({
       housingExpenses: '',
       utilitiesExpenses: '',
-      groceriesAndDiningOut: '',
-      healthAndMedical: '',
-      miscellaneous: '',
+     
+     
+      
       emergencyFundCurrentBal: '',
-      emergencyFundMonthlyContri: '',
+     
       retirementSavings: '',
-      shortTermSavings: '',
+      
       investmentAccountCurrentVal: '',
       investmentAccountMonthlyContri: '',
-      mutualFundsAndETFs: '',
-      stocksAndBonds: ''
+      
     })
-    
+    let [goals,setgoals]=useState({
+      exp:"",
+      time:"",
+      risk_tolerance:"",
+      invest:""
+    })
     const handleClickNext = (e) => {
+      
       e.preventDefault();
+      console.log(employmentAndIncomeData);
+      console.log(expensesSavingsAndInvestments);
+      console.log(goals);
       (pageNum < 3) && setPageNum((prevPageNum) => prevPageNum = prevPageNum + 1);
     }
   return (
@@ -56,7 +64,7 @@ export default function NewGoalForm(props) {
           </div>
           {pageNum == 1 && <EmploymentAndIncome employmentAndIncomeData={employmentAndIncomeData} setEmploymentAndIncomeData={setEmploymentAndIncomeData} />}
           {pageNum == 2 && <ExpensesSavingsAndInvestments expensesSavingsAndInvestments={expensesSavingsAndInvestments} setExpensesSavingsAndInvestments={setExpensesSavingsAndInvestments} />}
-          {pageNum == 3 && <GoalsAndRiskTolerance/>}
+          {pageNum == 3 && <GoalsAndRiskTolerance goals={goals} setgoals={setgoals}/>}
         </div>
       </div>
 
