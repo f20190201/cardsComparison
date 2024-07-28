@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const ChatInput = ({ sendMessage,output }) => {
+const ChatInput = ({ sendMessage,output, setIsChatBotOpen }) => {
   const [input, setInput] = useState('');
 
   const handleSend = async() => {
@@ -31,6 +31,12 @@ const ChatInput = ({ sendMessage,output }) => {
 }
   return (
     <div className="p-4 bg-white flex">
+      <button
+        className="mr-2 px-4 py-2 bg-red-500 text-white rounded-md"
+        onClick={() => setIsChatBotOpen(false)}
+      >
+        Close
+      </button>
       <input
         type="text"
         className="flex-1 p-2 border border-purple-300 rounded-md"
