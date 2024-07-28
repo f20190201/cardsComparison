@@ -127,7 +127,7 @@ Manage Goal              </button>
               </div>
               <div>
                 <span className="block text-2xl font-bold">₹29.5L</span>
-                <span className="block text-gray-500">Total Assets</span>
+                <span className="block text-gray-500">Invested Amount</span>
               </div>
             </div>
             <div className="flex items-center p-8 bg-white shadow-lg rounded-lg">
@@ -148,8 +148,8 @@ Manage Goal              </button>
                 </svg>
               </div>
               <div>
-                <span className="block text-2xl font-bold">+6.8%</span>
-                <span className="block text-gray-500">Last 1 year returns</span>
+                <span className="block text-2xl font-bold">500000</span>
+                <span className="block text-gray-500">Emergency Fund</span>
               </div>
             </div>
            
@@ -158,8 +158,8 @@ Manage Goal              </button>
                 <GrAchievement className="text-3xl" />
               </div>
               <div>
-                <span className="block text-2xl font-bold">83%</span>
-                <span className="block text-gray-500">Goals achieved</span>
+                <span className="block text-2xl font-bold">Beginner</span>
+                <span className="block text-gray-500">Investment Experience</span>
               </div>
             </div>
           </section>

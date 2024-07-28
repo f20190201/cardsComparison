@@ -7,8 +7,25 @@ const ChatInput = ({ sendMessage,output, setIsChatBotOpen }) => {
   const handleSend = async() => {
     if (input.trim() !== '') {
       sendMessage(input,"user");
+
       setInput('');
-     console.log(generateContent(input));
+      try {
+        const response = await axios.post('http://127.0.0.1:5000/api/generate-content', {
+         query: `${input} tell me this statement is related to finance or not reply in 'Yes' or 'No' only`,
+          
+        });
+        console.log(response);
+        
+       if(response.data.reponse==="Yes"){
+        generateContent(input);
+       }
+       else{
+        output(input,"user","This statement is not related to investment and finance","admin");
+       }
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Network response was not ok');
+      }
+     
     }
       
   };
@@ -27,7 +44,7 @@ const ChatInput = ({ sendMessage,output, setIsChatBotOpen }) => {
 
 }
  function removeAsterisks(text) {
-  return text.replace(/\*\*|\*|-/g, '').trim();
+  return text.replace(/\*/g, '').trim();
 }
   return (
     <div className="p-4 bg-white flex">
