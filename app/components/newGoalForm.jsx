@@ -3,6 +3,7 @@ import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import EmploymentAndIncome from './EmploymentAndIncome';
 import ExpensesSavingsAndInvestments from './ExpensesSavingAndInvestments';
 import GoalsAndRiskTolerance from './GoalsAndRiskTolerance';
+import axios from "axios";
 
 export default function NewGoalForm(props) {
     const onClose = props.onClose;
@@ -41,7 +42,29 @@ export default function NewGoalForm(props) {
       time:"",
       risk_tolerance:"",
       invest:""
-    })
+    });
+    async function generateContent(query) {
+      try {
+        const response = await axios.post('http://127.0.0.1:5000/api/generate-content', {
+          query,
+        });
+        console.log(response.data.response);
+        
+        
+        
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Network response was not ok');
+      }
+  
+  }
+    const handleSubmit=()=>{
+
+    const query=`I want to invest ${expensesSavingsAndInvestments?.investmentAccountMonthlyContri} money in a ${goals?.risk_tolerance} risky way for ${goals?.invest} for ${goals?.time} years`;
+console.log(query);
+generateContent(query);
+    
+    
+    }
     const handleClickNext = (e) => {
       
       e.preventDefault();
@@ -49,6 +72,9 @@ export default function NewGoalForm(props) {
       console.log(expensesSavingsAndInvestments);
       console.log(goals);
       (pageNum < 3) && setPageNum((prevPageNum) => prevPageNum = prevPageNum + 1);
+      if(pageNum==3){
+        handleSubmit();
+      }
     }
   return (
     <form>
@@ -89,7 +115,7 @@ export default function NewGoalForm(props) {
           onClick = {handleClickNext}
           className="rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
         >
-          Next
+         {pageNum==3?"Submit":"Next"}
         </button>
       </div>
     </form>
