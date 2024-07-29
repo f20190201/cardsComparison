@@ -49,7 +49,7 @@ const loginPage = () => {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 max-w">
             Or
-            <a href="#" className="font-medium text-purple-600 hover:text-purple-500 ml-1">
+            <a href="/createaccount" className="font-medium text-purple-600 hover:text-purple-500 ml-1">
                 create an account
             </a>
         </p>
