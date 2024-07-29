@@ -1,202 +1,254 @@
-import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
-
-const GoalsAndRiskTolerance = ({goals,setgoals}) => {
-
+import React, { useState, useRef, useEffect } from 'react';
+import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import EmploymentAndIncome from './EmploymentAndIncome';
+import ExpensesSavingsAndInvestments from './ExpensesSavingAndInvestments';
+import GoalsAndRiskTolerance from './GoalsAndRiskTolerance';
+import axios from "axios";
+import { jsPDF } from "jspdf";
+import { Audio } from 'react-loader-spinner';
+export default function NewGoalForm(props) {
+    const onClose = props.onClose;
+    const [pageNum, setPageNum] = useState(1);
+   
+    const sections = [
+      'Employment and Income',
+      'Expenses, Savings and Investments',
+      'Goals & Risk Tolerance'
+    ];
  
-  const handledropdown=(e)=>{
-setgoals({...goals,[e.target.name]:e.target.value});
+    const initalEmployementAndIncomeData =  {
+      occupation: '',
+      employer: '',
+      employmentStatus: '',
+      annualSalary: '',
+      otherIncomeSources: '',
+      monthlyIncomeSources: ''
+    };
+ 
+    const initalExpenseSavingsAndInvestments = {
+      housingExpenses: '',
+      utilitiesExpenses: '',
+      emergencyFundCurrentBal: '',
+      retirementSavings: '',
+      investmentAccountCurrentVal: '',
+      investmentAccountMonthlyContri: '',
+    }
+ 
+    const initalGoals = {
+      exp: '',
+      time: '',
+      risk_tolerance: '',
+      invest:''
+    }
+ 
+    let [employmentAndIncomeData, setEmploymentAndIncomeData] = useState(initalEmployementAndIncomeData);
+    let [expensesSavingsAndInvestments, setExpensesSavingsAndInvestments] = useState(initalExpenseSavingsAndInvestments);
+    let [goals,setgoals]=useState(initalGoals);
+    const[isLoading , setIsLoading] = useState(false);
+ 
+    async function generateContent(query) {
+      try {
+        const response = await axios.post('http://127.0.0.1:5000/api/generate-content', { query });
 
-  }
-  const handleChange=(e,name)=>{
-    setgoals({...goals,[e.target.name]:e.target.value});
-    console.log(goals);
-  }
+        let content = response.data.response;
+        console.log(content);
+        return content;
+        
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Network response was not ok');
+      }
   
-  return (
-    <div className=" border-b border-gray-900/10 pb-12">
-      <div className="mt-7 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-        <div className="sm:col-span-6">
-          <label
-            htmlFor="first-name"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            What's your investment experience?
-          </label>
-          <select class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" name="exp" value={goals.exp}
-        onChange={handledropdown}>
-            <option value="none">None</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-        </div>
-
-        <div className="sm:col-span-6">
-          <label
-            htmlFor="last-name"
-            className="block text-sm font-medium leading-6 text-gray-900 mb-2"
-          >
-            What's your Risk Tolerance
-          </label>
-            
-          <div style={{"display":"flex"}}>
-          <div class="flex items-center mb-2 mr-2">
-            <input
-              type="checkbox"
-              id="low"
-              name="risk_tolerance"
-              value="low"
-              class="mr-2"
-              checked={goals.risk_tolerance === 'low'}
-              onChange={handleChange}
-              
-            />
-            <label
-              for="low"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              Low
-            </label>
-          </div>
-          <div class="flex items-center mb-2 mr-2">
-            <input
-              type="checkbox"
-              id="moderate"
-              name="risk_tolerance"
-              value="moderate"
-              class="mr-2"
-              checked={goals.risk_tolerance === 'moderate'}
-          onChange={handleChange}
-            />
-            <label
-              for="moderate"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              Moderate
-            </label>
-          </div>
-          <div class="flex items-center mb-2 mr-2">
-            <input
-              type="checkbox"
-              id="high"
-              name="risk_tolerance"
-              value="high"
-              checked={goals.risk_tolerance === 'high'}
-              onChange={handleChange}
-              class="mr-2"
-            />
-            <label
-              for="high"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              High
-            </label>
-          </div>
-          </div>
-        </div>
-
+    }
+    async function saveData(data) {
+      try {
+        const response = await axios.post('http://127.0.0.1:5000/api/savedata', 
+data        );
+        console.log(response);
        
+        
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Network response was not ok');
+      }
+  
+    }
+    const generatePDF = (data) => {
+      try {
+        console.log("Starting PDF generation...");
+        const doc = new jsPDF();
+    
+        // Function to add bold text
+        function addBoldText(doc, text, x, y) {
+          doc.setFont("times", "bold");
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(12);
+          doc.text(text, x, y);
+          doc.setFont("courier", "normal"); // Reset to normal font
+          doc.setTextColor(107)
+          
+        }
+    
+        // Function to add regular text
+        function addRegularText(doc, text, x, y) {
+          doc.setFontSize(10); // Set font size to 10 for regular text
+          doc.setFont("helvetica", "normal"); // Ensure normal font style for regular text
+          const maxWidth = 180; // Max width in mm
+          const lineHeight = 7; // Line height in mm
+          const splitText = doc.splitTextToSize(text, maxWidth);
+    
+          let currentY = y;
+    
+          splitText.forEach((line) => {
+            // Check if adding another line would exceed the page height
+            if (currentY > doc.internal.pageSize.getHeight() - 10) { // Adjust margin
+              doc.addPage();
+              addPageBorder(doc);
+              currentY = 20; // Reset y position to top of new page
+            }
+    
+            // Print line
+            doc.text(line, x, currentY);
+            currentY += lineHeight; // Move to next line
+          });
+    
+          return currentY; // Return the new y position after adding text
+        }
+    
 
-        <div className="sm:col-span-6" >
-          <label
-            htmlFor="last-name"
-            className="block text-sm font-medium leading-6 text-gray-900 mb-2"
+        function addPageBorder(doc) {
+          const pageWidth = doc.internal.pageSize.width;
+          const pageHeight = doc.internal.pageSize.height;
+          const borderWidth = 1; // Border width in mm
+    
+          doc.setDrawColor(0, 0, 0); // Set border color (black)
+          doc.setLineWidth(borderWidth); // Set border width
+    
+          // Draw rectangle for the border
+          doc.rect(5, 5, pageWidth - 10, pageHeight - 10); // Adjust margins for border
+        }
+
+        // Split data into lines and process
+        const lines = data.split('\n');
+        const x = 10; // Margin from the left edge of the page
+        let y = 20; // Adjust starting y position as needed
+    
+        addPageBorder(doc);
+
+        lines.forEach(line => {
+          // Remove asterisks from the line
+          const cleanedLine = line.replace(/\*/g, '');
+    
+          if (line.startsWith("**") && line.endsWith("**")) {
+            // Heading detected
+            addBoldText(doc, cleanedLine.replace(/\*\*/g, ''), x, y);
+            y += 10; // Space between heading and body text
+          } else {
+            // Regular text
+            y = addRegularText(doc, cleanedLine, x, y);
+          }
+        });
+    
+        doc.save("suggestions.pdf");
+    
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+      }
+    }
+    
+ 
+    const handleSubmit= async ()=>{
+
+    setIsLoading(true);
+    const query=`I want to invest Rs ${expensesSavingsAndInvestments?.investmentAccountMonthlyContri} money in a ${goals?.risk_tolerance} risky way for ${goals?.invest} for ${goals?.time} years also give proper names of the suggestions`;
+    console.log(query);
+    try{
+    const suggestions = await generateContent(query);
+    console.log("suggestions >>>>>>" , suggestions);
+    generatePDF(suggestions);
+    saveData(goals);
+    
+    } catch (error) {
+      console.error("Error generating suggestions:", error);
+    }
+    finally{
+      setIsLoading(false);
+    }
+    setEmploymentAndIncomeData(initalEmployementAndIncomeData);
+    setExpensesSavingsAndInvestments(initalExpenseSavingsAndInvestments);
+    setgoals(initalGoals);
+    setPageNum(1);
+    onClose();
+    }
+    const handleClickNext = (e) => {
+      
+      e.preventDefault();
+      console.log(employmentAndIncomeData);
+      console.log(expensesSavingsAndInvestments);
+      console.log(goals);
+      (pageNum < 3) && setPageNum((prevPageNum) => prevPageNum = prevPageNum + 1);
+      if(pageNum==3){
+        handleSubmit();
+      }
+    }
+  return (
+    <>
+    {isLoading ?<>
+    
+    <Audio
+  height="80"
+  width="80"
+  radius="9"
+  color="green"
+  ariaLabel="loading"
+  wrapperStyle
+  wrapperClass
+/> 
+<p>Analysing Your Data</p>
+</>:
+    <>
+    <form>
+      <div className="space-y-12">
+        <div className="border-b border-gray-900/10 pb-12">
+          <div
+            className={`border-b border-gray-900/10 pb-6 align-middle space-y-4`}
           >
-            What's your primary investment goal?
-            </label>
-            <div style={{"display":"flex"}}>
-          <div class="flex items-center mb-2 mr-2" >
-            <input
-              type="checkbox"
-              id="capitalPreservation"
-              name="invest"
-              value="capitalPreservation"
-              class="mr-2"
-              checked={goals.invest === 'capitalPreservation'}
-              onChange={handleChange}
-
-            />
-            <label
-              for="capitalPreservation"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              Capital preservation
-            </label>
+            <h2 className="block text-gray-500"> Step {pageNum} of 3</h2>
+            <h1 className="font-semibold text-2xl leading-7 text-gray-900">
+              {sections[pageNum - 1]}
+            </h1>
           </div>
-          <div class="flex items-center mb-2 mr-2">
-            <input
-              type="checkbox"
-              id="incomeGeneration"
-              name="invest"
-              value="incomeGeneration"
-              class="mr-2"
-              checked={goals.invest === 'incomeGeneration'}
-              onChange={handleChange}
-            />
-            <label
-              for="incomeGeneration"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              Income generation
-            </label>
-          </div>
-          <div class="flex items-center mb-2 mr-2">
-            <input
-              type="checkbox"
-              id="growth"
-              name="invest"
-              value="growth"
-              class="mr-2"
-              checked={goals.invest === 'growth'}
-              onChange={handleChange}
-            />
-            <label
-              for="growth"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              Growth
-            </label>
-          </div>
-          <div class="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id="aggressiveGrowth"
-              name="invest"
-              value="aggressiveGrowth"
-              class="mr-2"
-              checked={goals.invest === 'aggressiveGrowth'}
-              onChange={handleChange}
-            />
-            <label
-              for="aggressiveGrowth"
-              className="text-sm font-medium leading-6 text-gray-900"
-            >
-              Aggressive growth
-            </label>
-          </div>
-          </div>
-        </div>
-
-        <div className="sm:col-span-6">
-          <label
-            htmlFor="last-name"
-            className="block text-sm font-medium leading-6 text-gray-900 mb-2"
-          >
-            How long do you plan to invest before you need to withdraw a significant portion of your investments?
-            </label>
-            <select onChange={handledropdown} name="time" value={goals.time} class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6">
-            <option value="none">None</option>
-            <option value="lessThan1">Less than 1 year</option>
-            <option value="1to3">1 - 3 years</option>
-            <option value="3to5">3 - 5 years</option>
-            <option value="5to10">5 - 10 years</option>
-            <option value="moreThan10">More than 10 years</option>
-          </select>
+          {pageNum == 1 && <EmploymentAndIncome employmentAndIncomeData={employmentAndIncomeData} setEmploymentAndIncomeData={setEmploymentAndIncomeData} />}
+          {pageNum == 2 && <ExpensesSavingsAndInvestments expensesSavingsAndInvestments={expensesSavingsAndInvestments} setExpensesSavingsAndInvestments={setExpensesSavingsAndInvestments} />}
+          {pageNum == 3 && <GoalsAndRiskTolerance goals={goals} setgoals={setgoals}/>}
         </div>
       </div>
-    </div>
+ 
+      <div className="relative mt-6 flex items-center justify-end gap-x-6">
+      <button
+          type="submit"
+          onClick={(e) => { e.preventDefault(); ((pageNum > 1) && setPageNum((prevPageNum) => prevPageNum = prevPageNum - 1))}}
+          style={{left: '0%'}}
+          className="absolute rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+        >
+          Back
+        </button>
+        <button
+          onClick={() => onClose(false)}
+          type="button"
+          className="text-sm font-semibold leading-6 text-gray-900"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          onClick = {handleClickNext}
+          disabled={isLoading}
+          className="rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+        >
+         {pageNum==3?"Submit":"Next"}
+        </button>
+      </div>
+    </form>
+    </>}
+    </>
   );
-};
-
-export default GoalsAndRiskTolerance;
+}
