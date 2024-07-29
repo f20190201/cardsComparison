@@ -22,7 +22,9 @@ export default function NewGoalForm(props) {
       employmentStatus: '',
       annualSalary: '',
       otherIncomeSources: '',
-      monthlyIncomeSources: ''
+      monthlyIncomeSources: '',
+      healthInsurance: false,
+      lifeInsurance: false
     };
  
     const initalExpenseSavingsAndInvestments = {
