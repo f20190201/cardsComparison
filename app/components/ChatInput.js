@@ -14,12 +14,14 @@ const ChatInput = ({ sendMessage,output, setIsChatBotOpen }) => {
          query: `${input} tell me this statement is related to finance or not reply in 'Yes' or 'No' only`,
           
         });
-        console.log(response);
+        console.log(response.data.response);
         
-       if(response.data.reponse==="Yes"){
+       if(response.data.response==="Yes"){
+        console.log("enter");
         generateContent(input);
        }
        else{
+        console.log(response.data.reponse);
         output(input,"user","This statement is not related to investment and finance","admin");
        }
       } catch (error) {
