@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { BsArrowRightShort } from 'react-icons/bs'
 import { IoHomeSharp } from "react-icons/io5";
 import { GrAchievement } from "react-icons/gr";
@@ -8,14 +8,18 @@ import DataTable from '../components/table.jsx';
 import CreateNewModal from '../components/modal.jsx';
 import { newsRows, finHealthData } from './newsData.js';
 import Chat from '../components/Chat'; 
-
+import axios from "axios";
 
 
 const userDashboard = () => {
     let [isSideBarExpanded, setIsSideBarExpanded] = useState(true);
     let [createNewModalOpen , setcreateNewModalOpen] = useState(false);
     let [isChatBotOpen, setIsChatBotOpen] = useState(false);
-
+const[values,setValues]=useState({
+  investedamt:"",
+  emgfund:"",
+  exp:""
+});
     const handleCreateNewGoal = () => {
       setcreateNewModalOpen(true);
     };
@@ -23,7 +27,21 @@ const userDashboard = () => {
     const handleExpandSidebar = () => {
         setIsSideBarExpanded((prevState) => !prevState);
     }
-
+    useEffect(() => {
+      generateContent();
+  }, []);
+  
+    async function generateContent() {
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/api/data', );
+        console.log(response.data.response);
+       setValues(response.data.response)
+        
+      } catch (error) {
+        throw new Error( 'Network response was not ok');
+      }
+  
+    }
   return (
     <>
     <body className="flex min-h-screen bg-gray-100" style={{ display: "flex" }}>
@@ -126,7 +144,7 @@ Manage Goal              </button>
                 <IoHomeSharp className="text-3xl" />
               </div>
               <div>
-                <span className="block text-2xl font-bold">₹29.5L</span>
+                <span className="block text-2xl font-bold">{values?.investedamt ||"NA"}</span>
                 <span className="block text-gray-500">Invested Amount</span>
               </div>
             </div>
@@ -148,7 +166,7 @@ Manage Goal              </button>
                 </svg>
               </div>
               <div>
-                <span className="block text-2xl font-bold">500000</span>
+                <span className="block text-2xl font-bold">{values?.emgfund ||"NA"}</span>
                 <span className="block text-gray-500">Emergency Fund</span>
               </div>
             </div>
@@ -158,7 +176,7 @@ Manage Goal              </button>
                 <GrAchievement className="text-3xl" />
               </div>
               <div>
-                <span className="block text-2xl font-bold">Beginner</span>
+                <span className="block text-2xl font-bold">{values?.exp ||"NA"  }</span>
                 <span className="block text-gray-500">Investment Experience</span>
               </div>
             </div>

@@ -59,7 +59,18 @@ export default function NewGoalForm(props) {
       }
   
     }
-    
+    async function saveData(data) {
+      try {
+        const response = await axios.post('http://127.0.0.1:5000/api/savedata', 
+data        );
+        console.log(response);
+       
+        
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Network response was not ok');
+      }
+  
+    }
   const generatePDF = (data) => {
   try {
     console.log("Starting PDF generation...");
@@ -109,12 +120,14 @@ export default function NewGoalForm(props) {
     const handleSubmit= async ()=>{
 
     setIsLoading(true);
-    const query=`I want to invest ${expensesSavingsAndInvestments?.investmentAccountMonthlyContri} money in a ${goals?.risk_tolerance} risky way for ${goals?.invest} for ${goals?.time} years`;
+    const query=`I want to invest Rs ${expensesSavingsAndInvestments?.investmentAccountMonthlyContri} money in a ${goals?.risk_tolerance} risky way for ${goals?.invest} for ${goals?.time} years also give proper names of the suggestions`;
     console.log(query);
     try{
     const suggestions = await generateContent(query);
     console.log("suggestions >>>>>>" , suggestions);
     generatePDF(suggestions);
+    saveData(goals);
+    
     } catch (error) {
       console.error("Error generating suggestions:", error);
     }
