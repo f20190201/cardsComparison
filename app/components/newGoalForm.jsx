@@ -5,10 +5,11 @@ import ExpensesSavingsAndInvestments from './ExpensesSavingAndInvestments';
 import GoalsAndRiskTolerance from './GoalsAndRiskTolerance';
 import axios from "axios";
 import { jsPDF } from "jspdf";
- 
+import { Audio } from 'react-loader-spinner';
 export default function NewGoalForm(props) {
     const onClose = props.onClose;
     const [pageNum, setPageNum] = useState(1);
+   
     const sections = [
       'Employment and Income',
       'Expenses, Savings and Investments',
@@ -106,6 +107,7 @@ export default function NewGoalForm(props) {
   }
  
     const handleSubmit= async ()=>{
+
     setIsLoading(true);
     const query=`I want to invest ${expensesSavingsAndInvestments?.investmentAccountMonthlyContri} money in a ${goals?.risk_tolerance} risky way for ${goals?.invest} for ${goals?.time} years`;
     console.log(query);
@@ -137,6 +139,21 @@ export default function NewGoalForm(props) {
       }
     }
   return (
+    <>
+    {isLoading ?<>
+    
+    <Audio
+  height="80"
+  width="80"
+  radius="9"
+  color="green"
+  ariaLabel="loading"
+  wrapperStyle
+  wrapperClass
+/> 
+<p>Analysing Your Data</p>
+</>:
+    <>
     <form>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-12">
@@ -180,5 +197,7 @@ export default function NewGoalForm(props) {
         </button>
       </div>
     </form>
+    </>}
+    </>
   );
 }
