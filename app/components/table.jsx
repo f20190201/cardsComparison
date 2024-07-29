@@ -36,7 +36,9 @@ const DataTable = (props) => {
                   </th>
                   
                   <td className="border-t-0 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                    {row.isButton ? <button class={`${buttonColor} text-white active:${buttonColor} text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`} type="button">{row.right}</button> : row.right}
+                    {row.isButton ? <button
+                    onClick={() => window.open(row.link, '_blank')} 
+                    class={`${buttonColor} text-white active:${buttonColor} text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`} type="button">{row.right}</button> : row.right}
                   </td>
                 </tr>)
                   })

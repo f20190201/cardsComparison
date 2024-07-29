@@ -83,7 +83,7 @@ setgoals({...goals,[e.target.name]:e.target.value});
               name="risk_tolerance"
               value="high"
               checked={goals.risk_tolerance === 'high'}
-          onChange={handleChange}
+              onChange={handleChange}
               class="mr-2"
             />
             <label
