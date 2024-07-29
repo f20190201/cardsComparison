@@ -4,7 +4,8 @@ import EmploymentAndIncome from './EmploymentAndIncome';
 import ExpensesSavingsAndInvestments from './ExpensesSavingAndInvestments';
 import GoalsAndRiskTolerance from './GoalsAndRiskTolerance';
 import axios from "axios";
-
+import { jsPDF } from "jspdf";
+ 
 export default function NewGoalForm(props) {
     const onClose = props.onClose;
     const [pageNum, setPageNum] = useState(1);
@@ -13,57 +14,116 @@ export default function NewGoalForm(props) {
       'Expenses, Savings and Investments',
       'Goals & Risk Tolerance'
     ];
-
-    let [employmentAndIncomeData, setEmploymentAndIncomeData] = useState({
+ 
+    const initalEmployementAndIncomeData =  {
       occupation: '',
       employer: '',
       employmentStatus: '',
       annualSalary: '',
       otherIncomeSources: '',
       monthlyIncomeSources: ''
-    });
-
-    let [expensesSavingsAndInvestments, setExpensesSavingsAndInvestments] = useState({
+    };
+ 
+    const initalExpenseSavingsAndInvestments = {
       housingExpenses: '',
       utilitiesExpenses: '',
-     
-     
-      
       emergencyFundCurrentBal: '',
-     
       retirementSavings: '',
-      
       investmentAccountCurrentVal: '',
       investmentAccountMonthlyContri: '',
-      
-    })
-    let [goals,setgoals]=useState({
-      exp:"",
-      time:"",
-      risk_tolerance:"",
-      invest:""
-    });
+    }
+ 
+    const initalGoals = {
+      exp: '',
+      time: '',
+      risk_tolerance: '',
+      invest:''
+    }
+ 
+    let [employmentAndIncomeData, setEmploymentAndIncomeData] = useState(initalEmployementAndIncomeData);
+    let [expensesSavingsAndInvestments, setExpensesSavingsAndInvestments] = useState(initalExpenseSavingsAndInvestments);
+    let [goals,setgoals]=useState(initalGoals);
+    const[isLoading , setIsLoading] = useState(false);
+ 
     async function generateContent(query) {
       try {
         const response = await axios.post('http://127.0.0.1:5000/api/generate-content', {
-          query,
+          query
         });
         console.log(response.data.response);
-        
-        
+        return response.data.response;
         
       } catch (error) {
         throw new Error(error.response?.data?.message || 'Network response was not ok');
       }
   
+    }
+    
+  const generatePDF = (data) => {
+  try {
+    console.log("Starting PDF generation...");
+    const doc = new jsPDF();
+ 
+    // Set font and size
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+ 
+    // If the text is long, split it to fit into a certain width
+    const maxWidth = 180; // Max width in mm
+    const lineHeight = 7; // Line height in mm
+    const splitText = doc.splitTextToSize(data, maxWidth);
+ 
+    // Calculate x position for center alignment
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const txtWidth = doc.getStringUnitWidth(splitText[0]) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+    const x = (pageWidth - txtWidth) / 2; // Adjust x as needed for alignment
+ 
+    // Add split text line by line for better control
+    let y = 20; // Adjust starting y position as needed
+    const pageHeight = doc.internal.pageSize.getHeight();
+ 
+    // Loop through each line of split text
+    splitText.forEach((line) => {
+      // Calculate x position for center alignment for each line
+      const txtWidth = doc.getStringUnitWidth(line) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const x = (pageWidth - txtWidth) / 2; // Center align
+ 
+      // Check if adding another line would exceed the page height
+      if (y > pageHeight - 10) { // Adjust margin
+        doc.addPage();
+        y = 20; // Reset y position to top of new page
+      }
+ 
+      // Print line
+      doc.text(line, x, y);
+      y += lineHeight; // Move to next line
+    });
+    doc.save("suggestions.pdf")
+  } catch (error) {
+    console.error("Error generating PDF:", error);
   }
-    const handleSubmit=()=>{
-
+  }
+ 
+    const handleSubmit= async ()=>{
+    setIsLoading(true);
     const query=`I want to invest ${expensesSavingsAndInvestments?.investmentAccountMonthlyContri} money in a ${goals?.risk_tolerance} risky way for ${goals?.invest} for ${goals?.time} years`;
-console.log(query);
-generateContent(query);
-    
-    
+    console.log(query);
+    try{
+    const suggestions = await generateContent(query);
+    console.log("suggestions >>>>>>" , suggestions);
+    generatePDF(suggestions);
+    } catch (error) {
+      console.error("Error generating suggestions:", error);
+    }
+    finally{
+      setIsLoading(false);
+    }
+    setEmploymentAndIncomeData(initalEmployementAndIncomeData);
+    setExpensesSavingsAndInvestments(initalExpenseSavingsAndInvestments);
+    setgoals(initalGoals);
+    setPageNum(1);
+    onClose();
     }
     const handleClickNext = (e) => {
       
@@ -93,7 +153,7 @@ generateContent(query);
           {pageNum == 3 && <GoalsAndRiskTolerance goals={goals} setgoals={setgoals}/>}
         </div>
       </div>
-
+ 
       <div className="relative mt-6 flex items-center justify-end gap-x-6">
       <button
           type="submit"
@@ -113,6 +173,7 @@ generateContent(query);
         <button
           type="submit"
           onClick = {handleClickNext}
+          disabled={isLoading}
           className="rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
         >
          {pageNum==3?"Submit":"Next"}
