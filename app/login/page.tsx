@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import axios from "axios";
+import { Audio } from 'react-loader-spinner';
 const loginPage = () => {
     
     const router = useRouter();
@@ -12,31 +13,38 @@ const loginPage = () => {
     let passwordRef: any = useRef(null);
     let [isShaking, setIsShaking] = useState(false);
 
-   
+   const[loading,setloading]=useState(false);
 
     const handleOnSubmitClick = async (e: any) => {
         e.preventDefault();
-
-        if(!compareCredentials(emailRef.current.value, passwordRef.current.value)) {
+setloading(true);
+        if(await compareCredentials(emailRef.current.value, passwordRef.current.value)==="false") {
             setIsShaking(true);
+            
             setTimeout(() => setIsShaking(false),1000);
         } else {
             console.log("login")
+            localStorage.setItem('email', emailRef.current.value);
             router.push('/dashboard'); 
         }
+        setloading(false);
     }
     async function compareCredentials(email: string, password: string) {
         try {
-          const response = await axios.post('http://127.0.0.1:8080/api/login', {
-            email,password
-          });
-          console.log(response.data.response);
+            const response = await axios.get('http://127.0.0.1:8082/api/advisory/login', {
+                params: {
+                  email: email,
+                  password: password
+                }
+              });
+                        console.log(response.data);
           
-         
+         return response.data;
           
         }
          catch (error) {
-          throw new Error( 'Network response was not ok');
+         
+          return "false";
         }
     
     }
@@ -88,7 +96,7 @@ const loginPage = () => {
                     </button>
                 </div>
             </form>
-          
+           
         </div>
     </div>
 </div>

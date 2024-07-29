@@ -15,11 +15,16 @@ const userDashboard = () => {
     let [isSideBarExpanded, setIsSideBarExpanded] = useState(true);
     let [createNewModalOpen , setcreateNewModalOpen] = useState(false);
     let [isChatBotOpen, setIsChatBotOpen] = useState(false);
+    const[user,setuser]=useState({
+      firstName:"",
+      lastName:""
+    })
 const[values,setValues]=useState({
-  investedamt:"",
-  emgfund:"",
-  exp:""
+  investedAmount:"",
+  emergencyFund:"",
+  investmentExperience:""
 });
+const storedEmail = localStorage.getItem('email');
     const handleCreateNewGoal = () => {
       setcreateNewModalOpen(true);
     };
@@ -29,13 +34,27 @@ const[values,setValues]=useState({
     }
     useEffect(() => {
       generateContent();
+      generateinfo();
   }, []);
   
     async function generateContent() {
+     
+
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/data', );
-        console.log(response.data.response);
-       setValues(response.data.response)
+        const response = await axios.get(`http://localhost:8082/api/advisory/getInvestmentDetails?email=${storedEmail}`);
+        console.log(response.data);
+        setValues(response.data)
+        
+      } catch (error) {
+        throw new Error( 'Network response was not ok');
+      }
+  
+    }
+    async function generateinfo() {
+      try {
+        const response = await axios.get(`http://localhost:8082/api/advisory/getcustomer?email=${storedEmail}`);
+        console.log(response.data);
+       setuser(response.data)
         
       } catch (error) {
         throw new Error( 'Network response was not ok');
@@ -106,7 +125,7 @@ const[values,setValues]=useState({
         {!isChatBotOpen && <main className="p-6 sm:p-10 space-y-6">
           <div className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
             <div className="mr-6">
-              <h1 className="text-4xl font-semibold mb-2">Hey, [User]</h1>
+              <h1 className="text-4xl font-semibold mb-2">Hey,{user?.firstName}</h1>
               <h2 className="text-gray-600 ml-0.5">
                 Get started with your financial journey{" "}
               </h2>
@@ -144,7 +163,7 @@ Manage Goal              </button>
                 <IoHomeSharp className="text-3xl" />
               </div>
               <div>
-                <span className="block text-2xl font-bold">{values?.investedamt ||"NA"}</span>
+                <span className="block text-2xl font-bold">{values?.investedAmount ||"NA"}</span>
                 <span className="block text-gray-500">Invested Amount</span>
               </div>
             </div>
@@ -166,7 +185,7 @@ Manage Goal              </button>
                 </svg>
               </div>
               <div>
-                <span className="block text-2xl font-bold">{values?.emgfund ||"NA"}</span>
+                <span className="block text-2xl font-bold">{values?.emergencyFund ||"NA"}</span>
                 <span className="block text-gray-500">Emergency Fund</span>
               </div>
             </div>
@@ -176,7 +195,7 @@ Manage Goal              </button>
                 <GrAchievement className="text-3xl" />
               </div>
               <div>
-                <span className="block text-2xl font-bold">{values?.exp ||"NA"  }</span>
+                <span className="block text-2xl font-bold">{values?.investmentExperience ||"NA"  }</span>
                 <span className="block text-gray-500">Investment Experience</span>
               </div>
             </div>

@@ -63,7 +63,7 @@ export default function NewGoalForm(props) {
     }
     async function saveData(data) {
       try {
-        const response = await axios.post('http://127.0.0.1:5000/api/savedata', 
+        const response = await axios.post('http://127.0.0.1:8082/api/advisory/investmentDetails', 
 data        );
         console.log(response);
        
@@ -128,7 +128,14 @@ data        );
     const suggestions = await generateContent(query);
     console.log("suggestions >>>>>>" , suggestions);
     generatePDF(suggestions);
-    saveData(goals);
+    const storedEmail = localStorage.getItem('email');
+    saveData({"email": storedEmail,
+    "investedAmount": expensesSavingsAndInvestments.investmentAccountMonthlyContri,
+    "emergencyFund": expensesSavingsAndInvestments.emergencyFundCurrentBal,
+    "retirementSaving": expensesSavingsAndInvestments.retirementSavings,
+    "investmentExperience": goals.exp,
+    "monthlyIncome": employmentAndIncomeData.monthlyIncomeSources,
+    "riskTolerance": goals.risk_tolerance});
     
     } catch (error) {
       console.error("Error generating suggestions:", error);

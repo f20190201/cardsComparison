@@ -18,22 +18,23 @@ const registerPage = () => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
+        
         const userData = {
-            firstname: formData.get('firstname'),
-            lastname: formData.get('lastname'),
+            firstName: formData.get('firstname'),
+            lastName: formData.get('lastname'),
             gender: formData.get('gender'),
             age: formData.get('age'),
             email: formData.get('email'),
             password: formData.get('password'),
         };
-        if (!userData.firstname || !userData.lastname || !userData.gender || !userData.age || !userData.email || !userData.password) {
+        if (!userData.firstName || !userData.lastName || !userData.gender || !userData.age || !userData.email || !userData.password) {
             setErrorMessage('Please fill in all required fields.');
             return; // Stop submission if validation fails
         }
 
         try {
-            const response = await axios.post('http://127.0.0.1:8080/api/register', userData);
-            console.log("Registration successful", response.data);
+            const response = await axios.post('http://127.0.0.1:8082/api/advisory/userDetails', userData);
+            console.log("Registration successful", response);
             router.push('/login'); // Redirect upon successfull registration
         } catch (error) {
             console.error("Registration failed", error);
@@ -79,9 +80,9 @@ const registerPage = () => {
                 <select id="gender" name="gender" required
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                     <option value="">Select your gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
                 </select>
             </div>
 
