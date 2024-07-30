@@ -6,7 +6,7 @@ import { GrAchievement } from "react-icons/gr";
 import { SiChatbot } from "react-icons/si";
 import DataTable from '../components/table.jsx';
 import CreateNewModal from '../components/modal.jsx';
-import { newsRows, finHealthData } from './newsData.js';
+import { newsRows } from './newsData.js';
 import Chat from '../components/Chat'; 
 import axios from "axios";
 
@@ -15,6 +15,26 @@ const userDashboard = () => {
     let [isSideBarExpanded, setIsSideBarExpanded] = useState(true);
     let [createNewModalOpen , setcreateNewModalOpen] = useState(false);
     let [isChatBotOpen, setIsChatBotOpen] = useState(false);
+    const[finHealthData,setfinhealth]=useState( [
+      {
+          left: "Emergency Fund",
+          right: "NA",
+          isButton: true,
+          type: 'error'
+      },
+      {
+          left: "Life Insurance",
+          right: "NA",
+          isButton: true,
+          type: 'error'
+      },
+     
+      {
+          left: "Health Insurance",
+          right: "NA",
+          isButton: true,
+          type: 'error'
+      }]);
     const[user,setuser]=useState({
       firstName:"",
       lastName:""
@@ -35,6 +55,7 @@ const storedEmail = localStorage.getItem('email');
     useEffect(() => {
       generateContent();
       generateinfo();
+      
   }, []);
   
     async function generateContent() {
@@ -44,7 +65,29 @@ const storedEmail = localStorage.getItem('email');
         const response = await axios.get(`http://localhost:8082/api/advisory/getInvestmentDetails?email=${storedEmail}`);
         console.log(response.data);
         setValues(response.data)
-        
+        if(response.data.investedAmount){
+          setfinhealth([
+            {
+                left: "Emergency Fund",
+                right: "DEFICIT",
+                isButton: true,
+                type: 'error'
+            },
+            {
+                left: "Life Insurance",
+                right: "INSURED",
+                isButton: true,
+                type: 'success'
+            },
+           
+            {
+                left: "Health Insurance",
+                right: "INSURED",
+                isButton: true,
+                type: 'success'
+            }
+        ])
+        }
       } catch (error) {
         throw new Error( 'Network response was not ok');
       }
@@ -54,8 +97,29 @@ const storedEmail = localStorage.getItem('email');
       try {
         const response = await axios.get(`http://localhost:8082/api/advisory/getcustomer?email=${storedEmail}`);
         console.log(response.data);
-       setuser(response.data)
-        
+       setuser(response.data);
+       if(values.investedAmount){
+        setfinhealth([
+          {
+              left: "Emergency Fund",
+              right: "DEFICIT",
+              isButton: true,
+              type: 'error'
+          },
+          {
+              left: "Life Insurance",
+              right: "INSURED",
+              isButton: true,
+              type: 'success'
+          },
+         
+          {
+              left: "Health Insurance",
+              right: "INSURED",
+              isButton: true,
+              type: 'success'
+          }
+      ])}
       } catch (error) {
         throw new Error( 'Network response was not ok');
       }
@@ -93,7 +157,7 @@ const storedEmail = localStorage.getItem('email');
             <button className="inline-flex items-center p-2 hover:bg-gray-100 focus:bg-gray-100 rounded-lg">
               <span className="sr-only">User Menu</span>
               <div className="hidden md:flex md:flex-col md:items-end md:leading-tight">
-                <span className="font-semibold">Grace Simmons</span>
+                <span className="font-semibold">{user?.firstName +" " + user?.lastName}</span>
               
               </div>
              

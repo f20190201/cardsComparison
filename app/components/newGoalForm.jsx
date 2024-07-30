@@ -73,52 +73,88 @@ data        );
       }
   
     }
-  const generatePDF = (data) => {
-  try {
-    console.log("Starting PDF generation...");
-    const doc = new jsPDF();
- 
-    // Set font and size
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
- 
-    // If the text is long, split it to fit into a certain width
-    const maxWidth = 180; // Max width in mm
-    const lineHeight = 7; // Line height in mm
-    const splitText = doc.splitTextToSize(data, maxWidth);
- 
-    // Calculate x position for center alignment
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const txtWidth = doc.getStringUnitWidth(splitText[0]) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-    const x = (pageWidth - txtWidth) / 2; // Adjust x as needed for alignment
- 
-    // Add split text line by line for better control
-    let y = 20; // Adjust starting y position as needed
-    const pageHeight = doc.internal.pageSize.getHeight();
- 
-    // Loop through each line of split text
-    splitText.forEach((line) => {
-      // Calculate x position for center alignment for each line
-      const txtWidth = doc.getStringUnitWidth(line) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const x = (pageWidth - txtWidth) / 2; // Center align
- 
-      // Check if adding another line would exceed the page height
-      if (y > pageHeight - 10) { // Adjust margin
-        doc.addPage();
-        y = 20; // Reset y position to top of new page
+    const generatePDF = (data) => {
+      try {
+        console.log("Starting PDF generation...");
+        const doc = new jsPDF();
+    
+        // Function to add bold text
+        function addBoldText(doc, text, x, y) {
+          doc.setFont("times", "bold");
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(12);
+          doc.text(text, x, y);
+          doc.setFont("courier", "normal"); // Reset to normal font
+          doc.setTextColor(107)
+          
+        }
+    
+        // Function to add regular text
+        function addRegularText(doc, text, x, y) {
+          doc.setFontSize(10); // Set font size to 10 for regular text
+          doc.setFont("helvetica", "normal"); // Ensure normal font style for regular text
+          const maxWidth = 180; // Max width in mm
+          const lineHeight = 7; // Line height in mm
+          const splitText = doc.splitTextToSize(text, maxWidth);
+    
+          let currentY = y;
+    
+          splitText.forEach((line) => {
+            // Check if adding another line would exceed the page height
+            if (currentY > doc.internal.pageSize.getHeight() - 10) { // Adjust margin
+              doc.addPage();
+              addPageBorder(doc);
+              currentY = 20; // Reset y position to top of new page
+            }
+    
+            // Print line
+            doc.text(line, x, currentY);
+            currentY += lineHeight; // Move to next line
+          });
+    
+          return currentY; // Return the new y position after adding text
+        }
+    
+
+        function addPageBorder(doc) {
+          const pageWidth = doc.internal.pageSize.width;
+          const pageHeight = doc.internal.pageSize.height;
+          const borderWidth = 1; // Border width in mm
+    
+          doc.setDrawColor(0, 0, 0); // Set border color (black)
+          doc.setLineWidth(borderWidth); // Set border width
+    
+          // Draw rectangle for the border
+          doc.rect(5, 5, pageWidth - 10, pageHeight - 10); // Adjust margins for border
+        }
+
+        // Split data into lines and process
+        const lines = data.split('\n');
+        const x = 10; // Margin from the left edge of the page
+        let y = 20; // Adjust starting y position as needed
+    
+        addPageBorder(doc);
+
+        lines.forEach(line => {
+          // Remove asterisks from the line
+          const cleanedLine = line.replace(/\*/g, '');
+    
+          if (line.startsWith("**") && line.endsWith("**")) {
+            // Heading detected
+            addBoldText(doc, cleanedLine.replace(/\*\*/g, ''), x, y);
+            y += 10; // Space between heading and body text
+          } else {
+            // Regular text
+            y = addRegularText(doc, cleanedLine, x, y);
+          }
+        });
+    
+        doc.save("suggestions.pdf");
+    
+      } catch (error) {
+        console.error("Error generating PDF:", error);
       }
- 
-      // Print line
-      doc.text(line, x, y);
-      y += lineHeight; // Move to next line
-    });
-    doc.save("suggestions.pdf")
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-  }
-  }
- 
+    }
     const handleSubmit= async ()=>{
 
     setIsLoading(true);

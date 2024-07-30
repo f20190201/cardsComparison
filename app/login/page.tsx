@@ -4,7 +4,8 @@ import React, { useState, useRef } from 'react';
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import axios from "axios";
-import { Audio } from 'react-loader-spinner';
+import { Oval } from 'react-loader-spinner';
+
 const loginPage = () => {
     
     const router = useRouter();
@@ -88,7 +89,7 @@ setloading(true);
                     </div>
                 </div>
 
-               
+              
                 <div>
                     <button type="submit" onClick={handleOnSubmitClick}
                         className={`${isShaking ? `animate-shake bg-red-500` : `bg-purple-600 hover:bg-purple-700 focus:ring-purple-500`} group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 `}>
