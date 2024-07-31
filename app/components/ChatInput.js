@@ -16,12 +16,12 @@ const ChatInput = ({ sendMessage,output, setIsChatBotOpen }) => {
         });
         console.log(response.data.response);
         
-       if(response.data.response==="Yes"){
+       if(response.data.response=="Yes"){
         console.log("enter");
         generateContent(input);
        }
        else{
-        console.log(response.data.reponse);
+        console.log(response.data.response);
         output(input,"user","This statement is not related to investment and finance","admin");
        }
       } catch (error) {
