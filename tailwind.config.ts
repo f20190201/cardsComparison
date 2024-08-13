@@ -19,14 +19,24 @@ const config: Config = {
           '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-10px)' },
           '20%, 40%, 60%, 80%': { transform: 'translateX(10px)' },
         },
+        translateXScroll: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translate(-100%)'}
+        },
+        scrollWatcher: {
+          'to': { scale: '1 1'}
+        }
       },
       animation: {
         shake: 'shake 1s ease-in-out',
+        translateXAnimation: 'translateXScroll 20s linear infinite',
+        scrollWatcher: 'scrollWatcher linear'
       },
     },
   },
   plugins: [
-    require('@tailwindcss/forms')
+    require('@tailwindcss/forms'),
+    require('daisyui')
   ],
 };
 export default config;

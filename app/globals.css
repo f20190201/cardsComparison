@@ -51,6 +51,11 @@
 .slide-out-right {
   animation: slideOutRight 0.5s ease-out forwards;
 }
+
+.top-scroll-watcher {
+  animation-timeline: scroll();
+}
+
 nextjs-portal {
   display: none;
 }
