@@ -25,7 +25,7 @@ setloading(true);
             setTimeout(() => setIsShaking(false),1000);
         } else {
             console.log("login")
-            localStorage.setItem('email', emailRef.current.value);
+            window.localStorage.setItem('email', emailRef.current.value);
             router.push('/dashboard'); 
         }
         setloading(false);

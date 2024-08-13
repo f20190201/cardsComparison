@@ -44,7 +44,7 @@ const[values,setValues]=useState({
   emergencyFund:"",
   investmentExperience:""
 });
-const storedEmail = localStorage.getItem('email');
+const storedEmail = (typeof window !== 'undefined') ? window?.localStorage.getItem('email') : 'abc@gmail.com';
     const handleCreateNewGoal = () => {
       setcreateNewModalOpen(true);
     };

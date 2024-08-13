@@ -164,7 +164,7 @@ data        );
     const suggestions = await generateContent(query);
     console.log("suggestions >>>>>>" , suggestions);
     generatePDF(suggestions);
-    const storedEmail = localStorage.getItem('email');
+    const storedEmail = window.localStorage.getItem('email');
     saveData({"email": storedEmail,
     "investedAmount": expensesSavingsAndInvestments.investmentAccountMonthlyContri,
     "emergencyFund": expensesSavingsAndInvestments.emergencyFundCurrentBal,
